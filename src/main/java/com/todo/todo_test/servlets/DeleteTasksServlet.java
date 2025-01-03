@@ -3,7 +3,6 @@ package com.todo.todo_test.servlets;
 import java.io.IOException;
 import java.io.PrintWriter;
 import java.sql.Connection;
-import java.sql.Date;
 import java.sql.PreparedStatement;
 import java.sql.SQLException;
 
@@ -18,8 +17,8 @@ import jakarta.servlet.http.HttpServletResponse;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.context.support.SpringBeanAutowiringSupport;
 
-@WebServlet(name = "TaskRegistrationServlet", urlPatterns = { "/createTask" })
-public class TaskRegistrationServlet extends HttpServlet {
+@WebServlet(name = "DeleteTasksServlet", urlPatterns = { "/deleteTask" })
+public class DeleteTasksServlet extends HttpServlet {
 
     @Autowired
     private DBConnectionManager dbManager;
@@ -32,51 +31,55 @@ public class TaskRegistrationServlet extends HttpServlet {
     }
 
     @Override
-    protected void doPost(HttpServletRequest request, HttpServletResponse response)
+    protected void doGet(HttpServletRequest request, HttpServletResponse response)
             throws ServletException, IOException {
 
-        String description = request.getParameter("description");
-        String status = request.getParameter("status");
-        String dueDateStr = request.getParameter("duedate"); // Ensure consistency with form
-
-        Date dueDate = null;
-        if (dueDateStr != null && !dueDateStr.isEmpty()) {
-            try {
-                dueDate = Date.valueOf(dueDateStr);
-            } catch (IllegalArgumentException e) {
-                // Handle invalid date format
-                response.sendError(HttpServletResponse.SC_BAD_REQUEST, "Invalid date format.");
-                return;
-            }
-        }
+        String idStr = request.getParameter("id");
 
         response.setContentType("text/html");
         PrintWriter out = response.getWriter();
 
+        if (idStr == null || idStr.isEmpty()) {
+            out.println("<html><body>");
+            out.println("<h3>Error: 'id' parameter is missing.</h3>");
+            out.println("<p><a href=\"index.html\">Go Back</a></p>");
+            out.println("</body></html>");
+            return;
+        }
+
         try {
+            int id = Integer.parseInt(idStr);
+
             dbManager.openConnection();
             Connection conn = dbManager.getConnection();
 
-            String sql = "INSERT INTO Tasks (description, status, duedate) VALUES (?, ?, ?)";
+            String sql = "DELETE FROM Tasks WHERE id = ?";
             PreparedStatement statement = conn.prepareStatement(sql);
-            statement.setString(1, description);
-            statement.setString(2, status);
-            statement.setDate(3, dueDate);
+            statement.setInt(1, id);
 
-            int rowsInserted = statement.executeUpdate();
-            if (rowsInserted > 0) {
+            int rowsDeleted = statement.executeUpdate();
+
+            if (rowsDeleted > 0) {
                 out.println("<html><body>");
-                out.println("<h3>Task created successfully!</h3>");
-                out.println("<p><a href=\"index.html\">Go Back</a></p>");
+                out.println("<h2>Task with ID " + id + " was deleted successfully</h2>");
+                out.println("<p><a href=\"viewTasks\">View All Tasks</a></p>");
+                out.println("</body></html>");
+            } else {
+                out.println("<html><body>");
+                out.println("<h2>Task with ID " + id + " was not found</h2>");
+                out.println("<p><a href=\"viewTasks\">View All Tasks</a></p>");
                 out.println("</body></html>");
             }
 
-        } catch (SQLException e) {
-            e.printStackTrace();
+            statement.close();
+
+        } catch (NumberFormatException e) {
             out.println("<html><body>");
-            out.println("<h3>Error creating task: " + e.getMessage() + "</h3>");
+            out.println("<h3>Error: 'id' parameter must be a valid integer.</h3>");
             out.println("<p><a href=\"index.html\">Go Back</a></p>");
             out.println("</body></html>");
+        } catch (SQLException e) {
+            throw new ServletException("Error deleting task", e);
         } finally {
             try {
                 dbManager.closeConnection();

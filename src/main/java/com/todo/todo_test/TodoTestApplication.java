@@ -6,8 +6,8 @@ import org.springframework.boot.web.servlet.ServletComponentScan;
 import org.springframework.context.annotation.ImportResource;
 
 @SpringBootApplication
-@ServletComponentScan // Only needed if you still have other @WebServlet annotations
-@ImportResource({ "classpath*:applicationContext.xml" })
+@ServletComponentScan // Enables scanning for @WebServlet annotations
+@ImportResource("classpath:applicationContext.xml") // Loads XML-based beans
 public class TodoTestApplication {
 
 	public static void main(String[] args) {

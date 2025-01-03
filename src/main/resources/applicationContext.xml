@@ -5,17 +5,18 @@
            https://www.springframework.org/schema/beans/spring-beans.xsd">
 
     <!-- 1) Declare the DBConnectionManager bean -->
-    <!-- src\main\java\com\todo\todo_test\db\DBConnectionManager.java -->
     <bean id="dbConnectionManager" class="com.todo.todo_test.db.DBConnectionManager">
-        <!-- Example property values; adjust if needed -->
-        <property name="url" value="jdbc:mysql://localhost:3306/TodoDB_test"/>
+        <!-- Escaped '&' characters in the URL -->
+        <property name="url" value="jdbc:mysql://localhost:3306/TodoDB_test?useSSL=false&amp;serverTimezone=UTC"/>
         <property name="username" value="root"/>
         <property name="password" value="fuad"/>
     </bean>
 
-    <!-- 2) Declare the TaskRegistrationServlet bean, using constructor injection -->
+    <!-- 2) Removed Servlet Bean Definitions to Avoid Conflicts -->
+    <!--
     <bean id="taskRegistrationServlet" class="com.todo.todo_test.servlets.TaskRegistrationServlet">
         <constructor-arg ref="dbConnectionManager"/>
     </bean>
+    -->
 
 </beans>
