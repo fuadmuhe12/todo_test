@@ -15,12 +15,9 @@ import jakarta.servlet.http.HttpServletResponse;
 @WebServlet(name = "DisplayTasksServlet", urlPatterns = { "/viewTasks" })
 public class DisplayTasksServlet extends HttpServlet {
 
-    private DBConnectionManager dbManager;
-
-    @Override
-    public void init() throws ServletException {
-        super.init();
-        dbManager = new DBConnectionManager();
+    private final DBConnectionManager dbManager;
+    public DisplayTasksServlet(DBConnectionManager dbManager) {
+        this.dbManager = dbManager;
     }
 
     @Override
@@ -49,11 +46,12 @@ public class DisplayTasksServlet extends HttpServlet {
                 String status = rs.getString("status");
                 Date dueDate = rs.getDate("duedate");
 
-                out.println("<tr>");
+                out.println("<tr >");
                 out.println("<td>" + id + "</td>");
                 out.println("<td>" + description + "</td>");
                 out.println("<td>" + status + "</td>");
                 out.println("<td>" + (dueDate != null ? dueDate : "") + "</td>");
+                out.println("<td><a href='deleteTask/" + id + "'>delete</a></td>");
                 out.println("</tr>");
             }
             rs.close();
@@ -75,4 +73,10 @@ public class DisplayTasksServlet extends HttpServlet {
             }
         }
     }
+
+    @Override
+    protected void doPost(HttpServletRequest request, HttpServletResponse response)
+            throws ServletException, IOException {
+        doGet(request, response);
+            }
 }

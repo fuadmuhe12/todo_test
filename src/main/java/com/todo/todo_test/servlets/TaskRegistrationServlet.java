@@ -2,10 +2,10 @@ package com.todo.todo_test.servlets;
 
 import java.io.IOException;
 import java.io.PrintWriter;
+import java.sql.Connection;
 import java.sql.Date;
 import java.sql.PreparedStatement;
 import java.sql.SQLException;
-import java.sql.Connection;
 
 import com.todo.todo_test.db.DBConnectionManager;
 
@@ -16,14 +16,19 @@ import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 
 @WebServlet(name = "TaskRegistrationServlet", urlPatterns = { "/createTask" })
+
 public class TaskRegistrationServlet extends HttpServlet {
 
-    private DBConnectionManager dbManager;
+    private final DBConnectionManager dbManager;
+
+    // Constructor injection
+    public TaskRegistrationServlet(DBConnectionManager dbManager) {
+        this.dbManager = dbManager;
+    }
 
     @Override
     public void init() throws ServletException {
-        super.init();
-        dbManager = new DBConnectionManager();
+        // No-op: we don't manually create or set DBConnectionManager here
     }
 
     @Override
@@ -59,7 +64,6 @@ public class TaskRegistrationServlet extends HttpServlet {
                 out.println("<p><a href=\"index.html\">Go Back</a></p>");
                 out.println("</body></html>");
             }
-
         } catch (SQLException e) {
             e.printStackTrace();
             out.println("<html><body>");
