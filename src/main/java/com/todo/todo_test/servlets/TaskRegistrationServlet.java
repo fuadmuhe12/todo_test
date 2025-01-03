@@ -5,6 +5,7 @@ import java.io.PrintWriter;
 import java.sql.Date;
 import java.sql.PreparedStatement;
 import java.sql.SQLException;
+import java.sql.Connection;
 
 import com.todo.todo_test.db.DBConnectionManager;
 
@@ -13,8 +14,6 @@ import jakarta.servlet.annotation.WebServlet;
 import jakarta.servlet.http.HttpServlet;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
-
-import java.sql.Connection;
 
 @WebServlet(name = "TaskRegistrationServlet", urlPatterns = { "/createTask" })
 public class TaskRegistrationServlet extends HttpServlet {
@@ -30,12 +29,11 @@ public class TaskRegistrationServlet extends HttpServlet {
     @Override
     protected void doPost(HttpServletRequest request, HttpServletResponse response)
             throws ServletException, IOException {
-        // Read form parameters
+
         String description = request.getParameter("description");
         String status = request.getParameter("status");
-        String dueDateStr = request.getParameter("due_date");
+        String dueDateStr = request.getParameter("duedate");
 
-        // Convert dueDateStr to SQL Date
         Date dueDate = null;
         if (dueDateStr != null && !dueDateStr.isEmpty()) {
             dueDate = Date.valueOf(dueDateStr);
@@ -44,12 +42,11 @@ public class TaskRegistrationServlet extends HttpServlet {
         response.setContentType("text/html");
         PrintWriter out = response.getWriter();
 
-        // Insert into database
         try {
             dbManager.openConnection();
             Connection conn = dbManager.getConnection();
 
-            String sql = "INSERT INTO Tasks (description, status, due_date) VALUES (?, ?, ?)";
+            String sql = "INSERT INTO Tasks (description, status, duedate) VALUES (?, ?, ?)";
             PreparedStatement statement = conn.prepareStatement(sql);
             statement.setString(1, description);
             statement.setString(2, status);

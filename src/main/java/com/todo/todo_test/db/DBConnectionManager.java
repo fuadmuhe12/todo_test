@@ -15,13 +15,14 @@ public class DBConnectionManager {
 
     private String url = "jdbc:mysql://localhost:3306/TodoDB_test";
     private String username = "root";
-    private String password = "fuad"; // Replace with your own password
+    private String password = "fuad"; // double-check that your MySQL user/pw is correct
 
     private Connection connection;
 
     public void openConnection() throws SQLException {
         if (connection == null || connection.isClosed()) {
             try {
+                // For MySQL
                 Class.forName("com.mysql.cj.jdbc.Driver");
                 connection = DriverManager.getConnection(url, username, password);
             } catch (ClassNotFoundException e) {

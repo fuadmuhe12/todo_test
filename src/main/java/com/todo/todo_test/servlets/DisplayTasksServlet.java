@@ -39,7 +39,7 @@ public class DisplayTasksServlet extends HttpServlet {
             dbManager.openConnection();
             Connection conn = dbManager.getConnection();
 
-            String sql = "SELECT id, description, status, due_date FROM Tasks";
+            String sql = "SELECT id, description, status, duedate FROM Tasks";
             Statement stmt = conn.createStatement();
             ResultSet rs = stmt.executeQuery(sql);
 
@@ -47,7 +47,7 @@ public class DisplayTasksServlet extends HttpServlet {
                 int id = rs.getInt("id");
                 String description = rs.getString("description");
                 String status = rs.getString("status");
-                Date dueDate = rs.getDate("due_date");
+                Date dueDate = rs.getDate("duedate");
 
                 out.println("<tr>");
                 out.println("<td>" + id + "</td>");
